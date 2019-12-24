@@ -1,0 +1,8 @@
+---- 商品库存量  ----
+CREATE TABLE `inventory` (
+  `id` int(11) NOT NULL,
+  `good_id` int(11) DEFAULT NULL,
+  `good_num` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

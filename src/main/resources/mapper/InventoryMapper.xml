@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ace.study.spike.mapper.InventoryMapper" >
+    <resultMap id="BaseResultMap" type="com.ace.study.spike.DO.InventoryDO" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="good_id" property="goodId" jdbcType="INTEGER" />
+        <result column="good_num" property="goodNum" jdbcType="INTEGER" />
+    </resultMap>
+
+    <sql id="Base_Column_List" >
+        id, good_id, good_num
+    </sql>
+
+
+    <select id="getInventory" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+        select
+        <include refid="Base_Column_List" />
+        from inventory
+        where good_id = #{goodId,jdbcType=INTEGER}
+    </select>
+
+    <delete id="delete2Db" parameterType="java.lang.Integer" >
+      delete from exttesttable
+      where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+    <insert id="insert2Db" parameterType="com.ace.study.spike.DO.IndexDO" >
+        insert into exttesttable (id, dsc)
+        values (#{id,jdbcType=INTEGER}, #{dsc,jdbcType=VARCHAR})
+  </insert>
+
+
+
+    <insert id="update2Db" parameterType="com.ace.study.spike.DO.IndexDO" >
+        UPDATE  exttesttable
+        set dsc=#{dsc}
+        where
+          id = #{id}
+        <!--<set>-->
+            <!--<trim suffixOverrides=",">-->
+                <!--<if test="id != null">-->
+                    <!--exttesttable.id=#{id,jdbcType=BIGINT},-->
+                <!--</if>-->
+                <!--<if test="dsc != null">-->
+                    <!--dsc=#{dsc,jdbcType=VARCHAR},-->
+                <!--</if>-->
+            <!--</trim>-->
+        <!--</set>-->
+        <!--WHERE-->
+          <!--1=1-->
+            <!--<if test="id != null">-->
+                <!--AND exttesttable.id=#{id,jdbcType=BIGINT}-->
+            <!--</if>-->
+            <!--<if test="dsc != null">-->
+                <!--AND dsc=#{dsc,jdbcType=VARCHAR}-->
+            <!--</if>-->
+  </insert>
+
+
+
+
+
+
+
+</mapper>
