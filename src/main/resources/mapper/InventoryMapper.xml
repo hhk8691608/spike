@@ -5,10 +5,11 @@
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="good_id" property="goodId" jdbcType="INTEGER" />
         <result column="good_num" property="goodNum" jdbcType="INTEGER" />
+        <result column="version" property="version" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, good_id, good_num
+        id, good_id, good_num, version
     </sql>
 
 
@@ -19,41 +20,14 @@
         where good_id = #{goodId,jdbcType=INTEGER}
     </select>
 
-    <delete id="delete2Db" parameterType="java.lang.Integer" >
-      delete from exttesttable
-      where id = #{id,jdbcType=INTEGER}
-  </delete>
 
-    <insert id="insert2Db" parameterType="com.ace.study.spike.DO.IndexDO" >
-        insert into exttesttable (id, dsc)
-        values (#{id,jdbcType=INTEGER}, #{dsc,jdbcType=VARCHAR})
-  </insert>
-
-
-
-    <insert id="update2Db" parameterType="com.ace.study.spike.DO.IndexDO" >
-        UPDATE  exttesttable
-        set dsc=#{dsc}
+    <insert id="updateInventory"   parameterType="com.ace.study.spike.DO.InventoryDO"  >
+        UPDATE  inventory
+        set good_num = (good_num - 1),
+            version = ( version + 1)
         where
-          id = #{id}
-        <!--<set>-->
-            <!--<trim suffixOverrides=",">-->
-                <!--<if test="id != null">-->
-                    <!--exttesttable.id=#{id,jdbcType=BIGINT},-->
-                <!--</if>-->
-                <!--<if test="dsc != null">-->
-                    <!--dsc=#{dsc,jdbcType=VARCHAR},-->
-                <!--</if>-->
-            <!--</trim>-->
-        <!--</set>-->
-        <!--WHERE-->
-          <!--1=1-->
-            <!--<if test="id != null">-->
-                <!--AND exttesttable.id=#{id,jdbcType=BIGINT}-->
-            <!--</if>-->
-            <!--<if test="dsc != null">-->
-                <!--AND dsc=#{dsc,jdbcType=VARCHAR}-->
-            <!--</if>-->
+          good_id =  #{goodId,jdbcType=INTEGER}
+          and  version = #{version,jdbcType=INTEGER}
   </insert>
 
 

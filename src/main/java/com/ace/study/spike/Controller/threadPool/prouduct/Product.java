@@ -14,21 +14,17 @@ import java.io.Serializable;
  *@Desciption
  * 生产者
  */
-public class Product implements Runnable {
+@Data
+public class Product {
 
-    @Getter
-    @Setter
-    private WareHouse wareHouse;
+    private String orderNum;
+    private int version;
+    private int inventoryId;
+    private String price;
+    private String order2User;
+
 
     public Product(){}
 
-    public Product(WareHouse wareHouse){
-        this.wareHouse = wareHouse;
-    }
 
-
-    @Override
-    public void run() {
-
-    }
 }

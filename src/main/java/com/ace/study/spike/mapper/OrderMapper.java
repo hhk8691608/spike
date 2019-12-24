@@ -8,4 +8,6 @@ public interface OrderMapper {
 
     public OrderDO getOrderInfo(int id);
 
+    public int saveOrder(OrderDO orderDO);
+
 }

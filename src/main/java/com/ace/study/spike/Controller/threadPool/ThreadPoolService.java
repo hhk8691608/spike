@@ -1,5 +1,6 @@
 package com.ace.study.spike.Controller.threadPool;
 
+import com.ace.study.spike.Controller.threadPool.dateWareHouse.WareHouse;
 import sun.nio.ch.ThreadPool;
 
 import java.util.concurrent.ExecutorService;
@@ -15,6 +16,8 @@ public class ThreadPoolService {
 
     private static ExecutorService pool = null;
 
+    private static WareHouse wareHouse = null;
+
     private  ThreadPoolService threadPoolService = new ThreadPoolService();
 
     private ThreadPoolService(){}
@@ -24,6 +27,14 @@ public class ThreadPoolService {
             pool = Executors.newCachedThreadPool();
         }
         return pool;
+    }
+
+
+    public static WareHouse getWareHouse(){
+        if(wareHouse == null){
+            wareHouse = new WareHouse();
+        }
+        return wareHouse;
     }
 
 

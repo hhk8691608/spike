@@ -8,5 +8,6 @@ public class InventoryDO {
     private long id ;
     private Long goodId;
     private Long goodNum;
+    private int version;
 
 }

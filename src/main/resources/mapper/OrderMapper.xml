@@ -23,7 +23,10 @@
     </select>
 
 
-
+    <insert id="saveOrder" parameterType="com.ace.study.spike.DO.OrderDO" >
+        insert into hk_order_info (id, good_id, order_num, price, create_time, create_by)
+        values (NULL , #{goodId,jdbcType=INTEGER}, #{orderNum,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR})
+  </insert>
 
 
 

@@ -1,12 +1,21 @@
 package com.ace.study.spike.api;
 
 
+import com.ace.study.spike.Controller.threadPool.Middleware.OrderDispatcher;
+import com.ace.study.spike.Controller.threadPool.ThreadPoolService;
+import com.ace.study.spike.Controller.threadPool.dateWareHouse.WareHouse;
+import com.ace.study.spike.Controller.threadPool.prouduct.Product;
+import com.ace.study.spike.DO.InventoryDO;
+import com.ace.study.spike.DO.OrderDO;
 import com.ace.study.spike.Service.IndexService;
 import com.ace.study.spike.VO.IndexVO;
+import com.ace.study.spike.mapper.InventoryMapper;
+import com.ace.study.spike.mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,6 +98,55 @@ public class IndexController {
         result.put("msg","success");
         return result;
     }
+
+
+    @Autowired
+    private InventoryMapper inventoryMapper;
+
+
+    @Autowired
+    private OrderMapper orderMapper;
+
+
+    @Autowired
+    private OrderDispatcher orderDispatcher;
+
+    @GetMapping(path = "/test")
+    public Map<String,Object> test(@RequestParam String id,@RequestParam Integer version) throws InterruptedException {
+//        InventoryDO inventoryDO = new InventoryDO();
+//        inventoryDO.setGoodId(Long.parseLong(id) );
+//        inventoryDO.setVersion(version);
+//        int code = inventoryMapper.updateInventory(inventoryDO);
+
+
+//        OrderDO orderDO = new OrderDO();
+//        orderDO.setGoodId(Integer.parseInt(id) );
+//        orderDO.setCreateTime(new Date());
+//        orderDO.setOrderNum(new Date().getTime()+"");
+//        orderDO.setPrice(""+new Date().getHours());
+//        orderDO.setCreateBy(""+new Date().getHours());
+//        int code = orderMapper.saveOrder(orderDO);
+//
+//        Map<String,Object> result = new HashMap<>();
+//        result.put("code",code);
+//        result.put("msg","success");
+//        return result;
+
+        WareHouse wareHouse = ThreadPoolService.getWareHouse();
+        Product product = new Product();
+        product.setInventoryId(Integer.parseInt(id) );
+        product.setVersion(version);
+        product.setOrderNum(new Date().getTime()+"");
+        product.setPrice(""+new Date().getHours());
+        product.setOrder2User(""+new Date().getHours());
+        wareHouse.push(product);
+
+        orderDispatcher.dispatch(wareHouse);
+        Map<String,Object> result = new HashMap<>();
+        result.put("msg","success");
+        return result;
+    }
+
 
 
 }

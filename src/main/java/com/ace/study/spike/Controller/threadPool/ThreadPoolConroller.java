@@ -55,8 +55,8 @@ public class ThreadPoolConroller {
     public Map<String,Object> preOrder(@RequestBody OrderVO orderVO){
         Map<String,Object> result = new HashMap<>();
         int code = threadService.preOrder(orderVO);
+        result.put("code",code);
         return result;
-
     }
 
     /*

@@ -1,6 +1,9 @@
 package com.ace.study.spike.Controller.threadPool.dateWareHouse;
 
+import com.ace.study.spike.Controller.threadPool.Middleware.OrderDispatcher;
 import com.ace.study.spike.Controller.threadPool.prouduct.Product;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -14,6 +17,14 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class WareHouse {
 
+    public WareHouse(){}
+    public WareHouse(OrderDispatcher orderDispatcher){
+        this.orderDispatcher = orderDispatcher;
+    }
+
+    @Getter
+    @Setter
+    private OrderDispatcher orderDispatcher;
 
     private BlockingQueue<Product> queues = new LinkedBlockingQueue<Product>();
 
@@ -37,7 +48,6 @@ public class WareHouse {
     public void setQueues(BlockingQueue<Product> queues) {
         this.queues = queues;
     }
-
 
 
 }
