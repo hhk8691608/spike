@@ -1,6 +1,7 @@
 package com.ace.study.spike.Controller.threadPool;
 
 import com.ace.study.spike.Controller.threadPool.dateWareHouse.WareHouse;
+import org.springframework.stereotype.Service;
 import sun.nio.ch.ThreadPool;
 
 import java.util.concurrent.ExecutorService;

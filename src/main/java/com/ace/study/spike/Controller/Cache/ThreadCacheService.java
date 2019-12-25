@@ -1,37 +1,34 @@
-package com.ace.study.spike.Controller.threadPool.service;
+package com.ace.study.spike.Controller.Cache;
 
+import com.ace.study.spike.Controller.Cache.Const.CacheConst;
 import com.ace.study.spike.Controller.threadPool.Consumer.Consumer;
 import com.ace.study.spike.Controller.threadPool.Middleware.OrderDispatcher;
 import com.ace.study.spike.Controller.threadPool.ThreadPoolService;
 import com.ace.study.spike.Controller.threadPool.dateWareHouse.WareHouse;
 import com.ace.study.spike.Controller.threadPool.prouduct.Product;
 import com.ace.study.spike.DO.InventoryDO;
-import com.ace.study.spike.DTO.EntryDto;
 import com.ace.study.spike.VO.OrderVO;
-import com.ace.study.spike.mapper.IndexMapper;
 import com.ace.study.spike.mapper.InventoryMapper;
 import com.ace.study.spike.mapper.OrderMapper;
 import com.ace.study.spike.utls.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.Executors;
 
-/***
- *@Author Mark
- *@Date 2019/12/24 10 52
- *@Desciption
- */
-@Service
-public class ThreadService {
-
+@Service("threadCacheService")
+public class ThreadCacheService {
 
 
     @Autowired
-    private IndexMapper indexMapper;
+    private RedisTemplate redisTemplate;
+
+    @Autowired
+    private OrderDispatcher orderDispatcher;
 
     @Autowired
     private InventoryMapper inventoryMapper;
@@ -39,16 +36,13 @@ public class ThreadService {
     @Autowired
     private OrderMapper orderMapper;
 
-    @Autowired
-    private OrderDispatcher orderDispatcher;
 
-    public Map<String,Object> getInventory(int id){
+
+    public int getInventory(int id){
         Map<String,Object> result = new HashMap<>();
-        InventoryDO inventoryDO = inventoryMapper.getInventory(id);
-        result.put("inventoryNum",inventoryDO.getGoodNum());
-        return result;
+        int goodNum = (int)redisTemplate.opsForValue().get(CacheConst.GOOD_UP_DAY+id);
+        return goodNum;
     }
-
 
 
     /*
@@ -89,29 +83,15 @@ public class ThreadService {
         return code;
     }
 
-    /*
-     * @Author Ace
-     * @Description
-     * 完成下单
-     * @Date 2019/12/24 13:37
-     * @Param []
-     * @return void
-    **/
-    public void finishOrder(OrderVO orderVO){
 
-    }
 
-    /*
-     * @Author Ace
-     * @Description
-     * 完成支付订单
-     * @Date 2019/12/24 13:37
-     * @Param []
-     * @return void
-    **/
-    public void payOrder(OrderVO orderVO){
 
-    }
+
+
+
+
+
+
 
 
 }

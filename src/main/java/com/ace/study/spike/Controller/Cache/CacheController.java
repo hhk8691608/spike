@@ -1,31 +1,22 @@
-package com.ace.study.spike.Controller.threadPool;
+package com.ace.study.spike.Controller.Cache;
 
-import com.ace.study.spike.Controller.threadPool.service.ThreadService;
-import com.ace.study.spike.VO.IndexVO;
 import com.ace.study.spike.VO.OrderVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/***
- *
- *@Author Mark
- *@Date 2019/12/24 10 19
- *@Desciption
- * 采用线程池+消费者生产者模式
- */
+
 @Controller
-@RequestMapping(path = "/threadPool")
+@RequestMapping(path = "/cache")
 @ResponseBody
-public class ThreadPoolConroller {
+public class CacheController {
 
 
     @Autowired
-    private ThreadService threadService;
+    private ThreadCacheService threadCacheService;
 
     /*
      * @Author Ace
@@ -37,7 +28,9 @@ public class ThreadPoolConroller {
      **/
     @GetMapping(path = "/getInventory")
     public Map<String,Object> getInventory(@RequestParam int id){
-        Map<String,Object> result = threadService.getInventory(id);
+        int goodNum = threadCacheService.getInventory(id);
+        Map<String,Object> result = new HashMap<>();
+        result.put("goodNum",goodNum);
         return result;
     }
 
@@ -48,6 +41,9 @@ public class ThreadPoolConroller {
      * @Author Ace
      * @Description
      * 预下单
+     * 采用预扣库存的方式
+     * 预扣库存实际就是“下单减库存”和 “付款减库存”两种方式的结合，将两次操作进行了前后关联，下单时预扣库存，付款时释放库存。
+     * 下单后一般都有个 “有效付款时间”，超过该时间订单自动释放，这就是典型的预扣库存方案。
      * @Date 2019/12/24 13:36
      * @Param []
      * @return void
@@ -55,7 +51,7 @@ public class ThreadPoolConroller {
     @PostMapping(path = "/preOrder")
     public Map<String,Object> preOrder(@RequestBody OrderVO orderVO){
         Map<String,Object> result = new HashMap<>();
-        int code = threadService.preOrder(orderVO);
+        int code = threadCacheService.preOrder(orderVO);
         result.put("code",code);
         return result;
     }
@@ -74,6 +70,9 @@ public class ThreadPoolConroller {
         Map<String,Object> result = new HashMap<>();
         return result;
     }
+
+
+
 
 
 }
