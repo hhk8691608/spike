@@ -16,6 +16,9 @@ import java.util.concurrent.BlockingQueue;
 @Service
 public class OrderDispatcher {
 
+    public static final int ORDER_PRE_COMMIT = 1;//订单预提交(未完成)
+    public static final int ORDER_COMMIT = 2;//订单提交(完成)
+
 
     @Autowired
     private  OrderMapper orderMapper;
@@ -42,6 +45,7 @@ public class OrderDispatcher {
             orderDO.setOrderNum(product.getOrderNum());
             orderDO.setPrice(product.getPrice());
             orderDO.setCreateBy(product.getOrder2User());
+            orderDO.setVersion(ORDER_PRE_COMMIT);
             code = orderMapper.saveOrder(orderDO);
             System.out.println("call end 。。。。。。。");
             return code;

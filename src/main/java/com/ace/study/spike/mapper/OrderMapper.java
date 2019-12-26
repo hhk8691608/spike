@@ -10,4 +10,5 @@ public interface OrderMapper {
 
     public int saveOrder(OrderDO orderDO);
 
+    int updateOrderByVersion(OrderDO orderDO);
 }

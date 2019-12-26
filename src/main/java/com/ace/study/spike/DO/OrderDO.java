@@ -13,6 +13,7 @@ public class OrderDO {
     private String price;
     private Date createTime;
     private String createBy;
+    private int version;
 
 
 }

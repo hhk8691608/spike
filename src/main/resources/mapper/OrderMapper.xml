@@ -8,10 +8,11 @@
         <result column="price" property="price" jdbcType="VARCHAR" />
         <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
         <result column="create_by" property="createBy" jdbcType="VARCHAR" />
+        <result column="version" property="version" jdbcType="INTEGER" />
     </resultMap>
 
     <sql id="Base_Column_List" >
-        id, good_id, order_num, price, create_time, create_by
+        id, good_id, order_num, price, create_time, create_by, version
     </sql>
 
 
@@ -24,9 +25,22 @@
 
 
     <insert id="saveOrder" parameterType="com.ace.study.spike.DO.OrderDO" >
-        insert into hk_order_info (id, good_id, order_num, price, create_time, create_by)
-        values (NULL , #{goodId,jdbcType=INTEGER}, #{orderNum,jdbcType=VARCHAR}, #{price,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{createBy,jdbcType=VARCHAR})
-  </insert>
+        insert into hk_order_info (id, good_id, order_num, price, create_time, create_by, version)
+        values (
+          NULL , #{goodId,jdbcType=INTEGER}, #{orderNum,jdbcType=VARCHAR},
+          #{price,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP},
+          #{createBy,jdbcType=VARCHAR}, #{version,jdbcType=INTEGER})
+    </insert>
+
+
+    <update id="updateOrderByVersion" parameterType="com.ace.study.spike.DO.OrderDO" >
+          update
+            hk_order_info
+          set
+            version = #{version,jdbcType=INTEGER}
+          where
+            id = #{id,jdbcType=INTEGER}
+    </update>
 
 
 

@@ -6,15 +6,18 @@ import com.ace.study.spike.Controller.threadPool.ThreadPoolService;
 import com.ace.study.spike.Controller.threadPool.dateWareHouse.WareHouse;
 import com.ace.study.spike.Controller.threadPool.prouduct.Product;
 import com.ace.study.spike.DO.InventoryDO;
+import com.ace.study.spike.DO.OrderDO;
 import com.ace.study.spike.DTO.EntryDto;
 import com.ace.study.spike.VO.OrderVO;
 import com.ace.study.spike.mapper.IndexMapper;
 import com.ace.study.spike.mapper.InventoryMapper;
 import com.ace.study.spike.mapper.OrderMapper;
+import com.ace.study.spike.utls.DateUtils;
 import com.ace.study.spike.utls.OrderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -27,6 +30,8 @@ import java.util.concurrent.Future;
  */
 @Service
 public class ThreadService {
+
+    HashMap<String,Date> cacheTokenMap = new HashMap<>();
 
 
 
@@ -59,8 +64,8 @@ public class ThreadService {
      * @Param []
      * @return void
      **/
-    public int preOrder(OrderVO orderVO){
-        int code = 0;
+    public String preOrder(OrderVO orderVO){
+        String token = null;
         try {
             InventoryDO inventory = inventoryMapper.getInventory(Integer.parseInt( orderVO.getId() +""));
             Long goodNum = inventory.getGoodNum();
@@ -86,19 +91,10 @@ public class ThreadService {
         }catch (Exception e) {
             e.printStackTrace();
         }
-        return code;
-    }
-
-    /*
-     * @Author Ace
-     * @Description
-     * 完成下单
-     * @Date 2019/12/24 13:37
-     * @Param []
-     * @return void
-    **/
-    public void finishOrder(OrderVO orderVO){
-
+        token = OrderUtils.makeToken();
+        cacheTokenMap.put(token,new Date());
+        System.out.println("preOrder token = "+token);
+        return token;
     }
 
     /*
@@ -109,8 +105,30 @@ public class ThreadService {
      * @Param []
      * @return void
     **/
-    public void payOrder(OrderVO orderVO){
+    public int payOrder(OrderVO orderVO){
 
+        String token = orderVO.getToken();
+        System.out.println("payOrder token = "+token);
+        Date date1 = cacheTokenMap.get(token);
+        Date date2 = new Date();
+
+        long seconds = DateUtils.dateDiffMin(date1, date2);
+        System.out.println("payOrder seconds = "+seconds);
+        if(seconds >= 10){
+            return 0;
+        }
+        OrderDO orderDO = orderMapper.getOrderInfo( Integer.parseInt(orderVO.getId()+""));
+        if(orderDO == null){
+            return 0;
+        }
+        orderDO.setVersion(OrderDispatcher.ORDER_COMMIT);
+        int code = orderMapper.updateOrderByVersion(orderDO);
+        if(code == 1){
+            //除掉cache的token
+            cacheTokenMap.remove(token);
+        }
+        //TODO 支付流水，账号扣费
+        return code;
     }
 
 
