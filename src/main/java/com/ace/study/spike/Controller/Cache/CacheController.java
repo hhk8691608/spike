@@ -50,9 +50,7 @@ public class CacheController {
      **/
     @PostMapping(path = "/preOrder")
     public Map<String,Object> preOrder(@RequestBody OrderVO orderVO){
-        Map<String,Object> result = new HashMap<>();
-        int code = threadCacheService.preOrder(orderVO);
-        result.put("code",code);
+        Map<String,Object> result = threadCacheService.preOrder(orderVO);
         return result;
     }
 
@@ -67,7 +65,7 @@ public class CacheController {
      **/
     @PostMapping(path = "/payOrder")
     public Map<String,Object>  payOrder(@RequestBody OrderVO orderVO){
-        Map<String,Object> result = new HashMap<>();
+        Map<String,Object> result = threadCacheService.payOrder(orderVO);
         return result;
     }
 

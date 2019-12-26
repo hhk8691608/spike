@@ -10,6 +10,11 @@ import sun.misc.BASE64Encoder;
 
 public class OrderUtils {
 
+    public static String generateOrderNumber() {
+        return  new Date().getTime()+"";
+    }
+
+
     public static String generateOrderNumber(String type) {
         return type + "" + new Date().getTime();
     }

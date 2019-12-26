@@ -13,6 +13,7 @@ public class OrderVO implements Serializable {
     private Date tokenTime;
     private String price;
     private String userName;
+    private Long goodId;
 
 
 }
