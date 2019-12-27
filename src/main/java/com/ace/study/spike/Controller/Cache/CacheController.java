@@ -28,9 +28,7 @@ public class CacheController {
      **/
     @GetMapping(path = "/getInventory")
     public Map<String,Object> getInventory(@RequestParam int id){
-        int goodNum = threadCacheService.getInventory(id);
-        Map<String,Object> result = new HashMap<>();
-        result.put("goodNum",goodNum);
+        Map<String,Object> result = threadCacheService.getInventory(id);
         return result;
     }
 

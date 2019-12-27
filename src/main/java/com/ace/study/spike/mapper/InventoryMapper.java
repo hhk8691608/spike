@@ -10,4 +10,6 @@ public interface InventoryMapper {
     public InventoryDO getInventory(Integer id);
 
     public int updateInventory(InventoryDO inventoryDO);
+
+    int addInventory(InventoryDO inventoryDO);
 }

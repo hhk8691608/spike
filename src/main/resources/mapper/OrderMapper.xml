@@ -24,6 +24,13 @@
     </select>
 
 
+    <select id="getOrderInfoByOrderNum" resultMap="BaseResultMap" parameterType="java.lang.String" >
+        select
+        <include refid="Base_Column_List" />
+        from hk_order_info
+        where order_num = #{orderNum,jdbcType=VARCHAR}
+    </select>
+
     <insert id="saveOrder" parameterType="com.ace.study.spike.DO.OrderDO" >
         insert into hk_order_info (id, good_id, order_num, price, create_time, create_by, version)
         values (

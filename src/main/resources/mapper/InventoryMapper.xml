@@ -31,6 +31,14 @@
   </insert>
 
 
+    <insert id="addInventory"   parameterType="com.ace.study.spike.DO.InventoryDO"  >
+        UPDATE  inventory
+        set good_num = (good_num + 1),
+            version = ( version + 1)
+        where
+          good_id =  #{goodId,jdbcType=INTEGER}
+          and  version = #{version,jdbcType=INTEGER}
+  </insert>
 
 
 

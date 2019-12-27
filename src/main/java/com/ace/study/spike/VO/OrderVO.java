@@ -14,6 +14,6 @@ public class OrderVO implements Serializable {
     private String price;
     private String userName;
     private Long goodId;
-
+    private String orderNum;
 
 }

@@ -64,13 +64,16 @@ public class ThreadService {
      * @Param []
      * @return void
      **/
-    public String preOrder(OrderVO orderVO){
+    public Map<String,Object> preOrder(OrderVO orderVO){
+        Map<String,Object> result = new HashMap<>();
         String token = null;
         try {
             InventoryDO inventory = inventoryMapper.getInventory(Integer.parseInt( orderVO.getId() +""));
             Long goodNum = inventory.getGoodNum();
             if(goodNum<=0){
-                throw new Exception("库存不足");
+                result.put("flag",300);
+                result.put("msg","库存不足");
+                return result;
             }
             int version = inventory.getVersion();
             Product product = new Product();
@@ -86,15 +89,18 @@ public class ThreadService {
             Consumer consumer = new Consumer();
             consumer.setWareHouse(wareHouse);
             pool.submit(consumer);
+
+            token = OrderUtils.makeToken();
+            cacheTokenMap.put(token,new Date());
+            result.put("flag",200);
+            result.put("token",token);
+            result.put("msg","success");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }catch (Exception e) {
             e.printStackTrace();
         }
-        token = OrderUtils.makeToken();
-        cacheTokenMap.put(token,new Date());
-        System.out.println("preOrder token = "+token);
-        return token;
+        return result;
     }
 
     /*
@@ -105,8 +111,9 @@ public class ThreadService {
      * @Param []
      * @return void
     **/
-    public int payOrder(OrderVO orderVO){
+    public Map<String,Object> payOrder(OrderVO orderVO){
 
+        Map<String,Object> result = new HashMap<>();
         String token = orderVO.getToken();
         System.out.println("payOrder token = "+token);
         Date date1 = cacheTokenMap.get(token);
@@ -114,21 +121,29 @@ public class ThreadService {
 
         long seconds = DateUtils.dateDiffMin(date1, date2);
         System.out.println("payOrder seconds = "+seconds);
+        OrderDO orderDO = null;
         if(seconds >= 10){
-            return 0;
+            result.put("flag",300);
+            result.put("msg","令牌过期");
+            //回退库存
+            orderDO = orderMapper.getOrderInfo( Integer.parseInt(orderVO.getId()+""));
+            InventoryDO inventory = inventoryMapper.getInventory(Integer.parseInt( orderDO.getGoodId() +""));
+            int code = inventoryMapper.addInventory(inventory);
+            return result;
         }
-        OrderDO orderDO = orderMapper.getOrderInfo( Integer.parseInt(orderVO.getId()+""));
+        orderDO = orderMapper.getOrderInfo( Integer.parseInt(orderVO.getId()+""));
         if(orderDO == null){
-            return 0;
+            result.put("flag",300);
+            result.put("msg","预订单不存在");
+            return result;
         }
         orderDO.setVersion(OrderDispatcher.ORDER_COMMIT);
         int code = orderMapper.updateOrderByVersion(orderDO);
-        if(code == 1){
-            //除掉cache的token
-            cacheTokenMap.remove(token);
-        }
+        //除掉cache的token
+        cacheTokenMap.remove(token);
         //TODO 支付流水，账号扣费
-        return code;
+
+        return result;
     }
 
 

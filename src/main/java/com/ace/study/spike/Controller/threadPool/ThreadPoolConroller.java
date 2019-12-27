@@ -38,6 +38,7 @@ public class ThreadPoolConroller {
     @GetMapping(path = "/getInventory")
     public Map<String,Object> getInventory(@RequestParam int id){
         Map<String,Object> result = threadService.getInventory(id);
+        result.put("flag",200);
         return result;
     }
 
@@ -54,9 +55,7 @@ public class ThreadPoolConroller {
      **/
     @PostMapping(path = "/preOrder")
     public Map<String,Object> preOrder(@RequestBody OrderVO orderVO){
-        Map<String,Object> result = new HashMap<>();
-        String token = threadService.preOrder(orderVO);
-        result.put("token",token);
+        Map<String,Object> result =  threadService.preOrder(orderVO);
         return result;
     }
 
@@ -71,9 +70,7 @@ public class ThreadPoolConroller {
      **/
     @PostMapping(path = "/payOrder")
     public Map<String,Object>  payOrder(@RequestBody OrderVO orderVO){
-        Map<String,Object> result = new HashMap<>();
-        int code = threadService.payOrder(orderVO);
-        result.put("code",code);
+        Map<String,Object> result = threadService.payOrder(orderVO);
         return result;
     }
 
