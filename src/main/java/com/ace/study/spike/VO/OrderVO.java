@@ -16,4 +16,25 @@ public class OrderVO implements Serializable {
     private Long goodId;
     private String orderNum;
 
+    //MQ字段
+    private String message;
+    private String msg;
+    private Date date;
+
+
+    @Override
+    public String toString() {
+        return "OrderVO{" +
+                "id=" + id +
+                ", token='" + token + '\'' +
+                ", tokenTime=" + tokenTime +
+                ", price='" + price + '\'' +
+                ", userName='" + userName + '\'' +
+                ", goodId=" + goodId +
+                ", orderNum='" + orderNum + '\'' +
+                ", message='" + message + '\'' +
+                ", msg='" + msg + '\'' +
+                ", date=" + date +
+                '}';
+    }
 }

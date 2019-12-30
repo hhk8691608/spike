@@ -9,4 +9,9 @@ public class SystemConst {
     public final static String RESPONSE_MSG_SUCEESS = "成功";
 
 
+
+    //mq预下单
+    public final static String MQ_PRE_ORDER_MSG = "预下单";
+
+
 }
