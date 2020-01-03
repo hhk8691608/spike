@@ -32,13 +32,7 @@ public class OrderDispatcher {
             Product product = wareHouse.pop();
             int version = product.getVersion();
             int inventoryId = product.getInventoryId();
-            InventoryDO inventoryDO = new InventoryDO();
-            inventoryDO.setGoodId(Long.parseLong(inventoryId+"") );
-            inventoryDO.setVersion(version);
-            code = inventoryMapper.updateInventory(inventoryDO);
-            if(code == 0){
-                return code;
-            }
+
             OrderDO orderDO = new OrderDO();
             orderDO.setGoodId(inventoryId);
             orderDO.setCreateTime(new Date());
@@ -47,7 +41,13 @@ public class OrderDispatcher {
             orderDO.setCreateBy(product.getOrder2User());
             orderDO.setVersion(ORDER_PRE_COMMIT);
             code = orderMapper.saveOrder(orderDO);
-            System.out.println("call end 。。。。。。。");
+            if(code == 0){
+                return code;
+            }
+            InventoryDO inventoryDO = new InventoryDO();
+            inventoryDO.setGoodId(Long.parseLong(inventoryId+"") );
+            inventoryDO.setVersion(version);
+            code = inventoryMapper.updateInventory(inventoryDO);
             return code;
     }
 

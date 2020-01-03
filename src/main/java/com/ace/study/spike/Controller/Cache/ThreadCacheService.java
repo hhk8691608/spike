@@ -1,14 +1,18 @@
 package com.ace.study.spike.Controller.Cache;
 
 import com.ace.study.spike.Const.SystemConst;
+import com.ace.study.spike.Const.business.OrderConst;
 import com.ace.study.spike.Controller.Cache.Const.CacheConst;
 import com.ace.study.spike.Controller.threadPool.Middleware.OrderDispatcher;
+import com.ace.study.spike.Controller.threadPool.service.ThreadService;
 import com.ace.study.spike.DO.InventoryDO;
 import com.ace.study.spike.DO.OrderDO;
 import com.ace.study.spike.VO.OrderVO;
 import com.ace.study.spike.mapper.InventoryMapper;
 import com.ace.study.spike.mapper.OrderMapper;
 import com.ace.study.spike.utls.OrderUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 @Service("threadCacheService")
 public class ThreadCacheService {
 
+    private Logger logger = LoggerFactory.getLogger(ThreadCacheService.class);
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -62,7 +67,7 @@ public class ThreadCacheService {
             int goodNum = (int) redisTemplate.opsForValue().get(CacheConst.GOOD_UP_DAY+orderVO.getId());
             if(goodNum<=0){
                 result.put("flag", SystemConst.RESPONSE_FLAG_ERROR);
-                result.put("msg", "库存不足");
+                result.put("msg", OrderConst.INVENTORY_SHORTAGE_);
                 return result;
             }
             OrderDO orderDO = new OrderDO();
@@ -76,7 +81,7 @@ public class ThreadCacheService {
             code = orderMapper.saveOrder(orderDO);
             if(code == 0){
                 result.put("flag", SystemConst.RESPONSE_FLAG_ERROR);
-                result.put("msg", "下单失败");
+                result.put("msg", OrderConst.ORDER_FAILED);
                 return result;
             }
             //预扣库存
@@ -103,13 +108,14 @@ public class ThreadCacheService {
         String token = orderVO.getToken();
         String cacheToken = (String) redisTemplate.opsForValue().get( (token+":"+orderVO.getGoodId() ));
         if(cacheToken == null || !cacheToken.equals(token)){
-            result.put("msg", "令牌过期");
+            result.put("msg", OrderConst.TOKEN_EXPIRED);
             return result;
         }
         InventoryDO inventory = inventoryMapper.getInventory(Integer.parseInt( orderVO.getGoodId() +""));
         Long goodNum = inventory.getGoodNum();
         if(goodNum<=0) {
-            result.put("msg", "库存不足");
+            logger.info("预扣失败，超卖问题,goodNum={}",goodNum);
+            result.put("msg", OrderConst.INVENTORY_SHORTAGE_);
             return result;
         }
         int version = inventory.getVersion();
@@ -118,12 +124,12 @@ public class ThreadCacheService {
         inventoryDO.setVersion(version);
         int code = inventoryMapper.updateInventory(inventoryDO);
         if(code == 0){
-            result.put("msg", "支付失败");
+            result.put("msg", OrderConst.PAYMENT_FAILED);
             return result;
         }
         OrderDO orderDO = orderMapper.getOrderInfoByOrderNum( orderVO.getOrderNum());
         if(orderDO == null){
-            result.put("msg", "支付失败");
+            result.put("msg", OrderConst.PAYMENT_FAILED);
             return result;
         }
         orderDO.setVersion(OrderDispatcher.ORDER_COMMIT);
@@ -136,7 +142,7 @@ public class ThreadCacheService {
 
             //除掉cache的token
             redisTemplate.delete(  (token+":"+orderVO.getGoodId() ) );
-            result.put("msg", "支付失败");
+            result.put("msg", OrderConst.PAYMENT_FAILED);
             return result;
         }
         //除掉cache的token
